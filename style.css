@@ -1,110 +1,235 @@
+/* =========================
+   RESET
+========================= */
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
+
+/* =========================
+   PAGE
+========================= */
+
 body {
     font-family: Arial, sans-serif;
     min-height: 100vh;
+
     display: flex;
     justify-content: center;
     align-items: center;
-    background: linear-gradient(135deg, #4facfe, #00f2fe);
+
     padding: 20px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #2563eb,
+            #06b6d4
+        );
+
+    color: #111827;
 }
+
+
+/* =========================
+   APP CONTAINER
+========================= */
 
 .weather-app {
     width: 100%;
-    max-width: 500px;
-    text-align: center;
+    max-width: 480px;
 }
 
+
+/* =========================
+   HEADER
+========================= */
+
 h1 {
+    text-align: center;
     color: white;
-    font-size: 2.5rem;
-    margin-bottom: 10px;
+
+    font-size: 2.4rem;
+
+    margin-bottom: 8px;
 }
 
 .subtitle {
-    color: white;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.9);
+
     margin-bottom: 25px;
+
+    font-size: 0.95rem;
 }
+
+
+/* =========================
+   SEARCH
+========================= */
 
 .search-box {
     display: flex;
     gap: 10px;
-    margin-bottom: 25px;
+
+    margin-bottom: 20px;
 }
 
 .search-box input {
     flex: 1;
+
     padding: 15px;
+
     border: none;
-    border-radius: 10px;
+    border-radius: 12px;
+
     font-size: 1rem;
+
     outline: none;
+
+    box-shadow:
+        0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
 .search-box button {
     padding: 15px 20px;
+
     border: none;
-    border-radius: 10px;
-    background: #222;
+    border-radius: 12px;
+
+    background: #111827;
     color: white;
-    cursor: pointer;
+
+    font-size: 1rem;
     font-weight: bold;
+
+    cursor: pointer;
+
+    transition: 0.2s;
 }
 
 .search-box button:hover {
-    opacity: 0.8;
+    transform: translateY(-2px);
 }
+
+
+/* =========================
+   WEATHER CARD
+========================= */
 
 .weather-card {
-    background: rgba(255, 255, 255, 0.9);
-    padding: 30px;
-    border-radius: 20px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    background: rgba(255, 255, 255, 0.95);
+
+    border-radius: 24px;
+
+    padding: 30px 25px;
+
+    text-align: center;
+
+    box-shadow:
+        0 20px 40px rgba(0, 0, 0, 0.2);
 }
+
+
+/* =========================
+   LOCATION
+========================= */
 
 .weather-card h2 {
-    font-size: 1.8rem;
-    margin-bottom: 15px;
-}
+    font-size: 1.7rem;
 
-.weather-icon {
-    font-size: 4rem;
-    margin: 10px;
-}
-
-.temperature {
-    font-size: 3rem;
-    font-weight: bold;
     margin-bottom: 10px;
 }
 
+
+/* =========================
+   WEATHER ICON
+========================= */
+
+.weather-icon {
+    font-size: 5rem;
+
+    margin: 15px 0;
+}
+
+
+/* =========================
+   TEMPERATURE
+========================= */
+
+.temperature {
+    font-size: 4rem;
+
+    font-weight: bold;
+
+    margin-bottom: 5px;
+}
+
+
+/* =========================
+   DESCRIPTION
+========================= */
+
+#description {
+    font-size: 1.2rem;
+
+    color: #4b5563;
+
+    margin-bottom: 25px;
+}
+
+
+/* =========================
+   WEATHER DETAILS
+========================= */
+
 .weather-details {
     display: flex;
+
     justify-content: space-around;
-    margin-top: 25px;
+
+    border-top: 1px solid #e5e7eb;
+
     padding-top: 20px;
-    border-top: 1px solid #ddd;
 }
 
 .weather-details div {
-    text-align: center;
+    flex: 1;
 }
 
 .weather-details span {
-    font-size: 1.5rem;
+    display: block;
+
+    font-size: 2rem;
+
+    margin-bottom: 5px;
 }
 
 .weather-details p {
-    margin: 5px 0;
-    color: #666;
+    color: #6b7280;
+
+    margin-bottom: 5px;
+
+    font-size: 0.9rem;
 }
 
+.weather-details strong {
+    font-size: 1.2rem;
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
 @media (max-width: 500px) {
+
+    body {
+        padding: 15px;
+    }
 
     h1 {
         font-size: 2rem;
@@ -117,4 +242,16 @@ h1 {
     .search-box button {
         width: 100%;
     }
-}
+
+    .weather-card {
+        padding: 25px 20px;
+    }
+
+    .temperature {
+        font-size: 3.5rem;
+    }
+
+    .weather-icon {
+        font-size: 4rem;
+    }
+    }
