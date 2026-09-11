@@ -39,4 +39,4 @@ function searchWeather() {
     windSpeed.textContent = "-- km/h";
 
     weatherIcon.textContent = "🌤️";
-                           }
+}
