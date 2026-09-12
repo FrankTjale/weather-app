@@ -2,6 +2,8 @@ const cityInput = document.getElementById("cityInput");
 const searchButton = document.getElementById("searchButton");
 
 const cityName = document.getElementById("cityName");
+const localTime = document.getElementById("localTime");
+
 const temperature = document.getElementById("temperature");
 const description = document.getElementById("description");
 const humidity = document.getElementById("humidity");
@@ -16,38 +18,56 @@ const forecast = document.getElementById("forecast");
 
 
 /* =========================
+   CLOCK VARIABLES
+========================= */
+
+let cityTimeZone = null;
+
+
+/* =========================
    SEARCH BUTTON
 ========================= */
 
-searchButton.addEventListener("click", searchWeather);
+searchButton.addEventListener(
+    "click",
+    searchWeather
+);
 
 
 /* =========================
    ENTER KEY
 ========================= */
 
-cityInput.addEventListener("keypress", function(event) {
+cityInput.addEventListener(
+    "keypress",
+    function(event) {
 
-    if (event.key === "Enter") {
-        searchWeather();
+        if (event.key === "Enter") {
+            searchWeather();
+        }
+
     }
-
-});
+);
 
 
 /* =========================
-   SEARCH WEATHER BY CITY
+   SEARCH WEATHER
 ========================= */
 
 async function searchWeather() {
 
-    const city = cityInput.value.trim();
+    const city =
+        cityInput.value.trim();
+
 
     if (city === "") {
 
-        alert("Please enter a city name.");
+        alert(
+            "Please enter a city name."
+        );
 
         return;
+
     }
 
 
@@ -56,13 +76,12 @@ async function searchWeather() {
         showLoading();
 
 
-        // Find city coordinates
+        const locationResponse =
+            await fetch(
 
-        const locationResponse = await fetch(
+                `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&language=en&format=json`
 
-            `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&language=en&format=json`
-
-        );
+            );
 
 
         const locationData =
@@ -71,7 +90,9 @@ async function searchWeather() {
 
         if (!locationData.results) {
 
-            throw new Error("City not found");
+            throw new Error(
+                "City not found"
+            );
 
         }
 
@@ -89,8 +110,8 @@ async function searchWeather() {
 
         );
 
-
     }
+
 
     catch (error) {
 
@@ -115,11 +136,12 @@ async function getWeather(
 ) {
 
 
-    const weatherResponse = await fetch(
+    const weatherResponse =
+        await fetch(
 
-        `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset&forecast_days=5&timezone=auto`
+            `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset&forecast_days=5&timezone=auto`
 
-    );
+        );
 
 
     const weatherData =
@@ -140,6 +162,17 @@ async function getWeather(
 
     cityName.textContent =
         `${name}, ${country}`;
+
+
+    /* =========================
+       TIME ZONE
+    ========================= */
+
+    cityTimeZone =
+        weatherData.timezone;
+
+
+    updateLocalTime();
 
 
     /* =========================
@@ -201,7 +234,7 @@ async function getWeather(
 
 
     /* =========================
-       DYNAMIC BACKGROUND
+       BACKGROUND
     ========================= */
 
     setWeatherBackground(
@@ -230,7 +263,7 @@ async function getWeather(
 
 
     /* =========================
-       5-DAY FORECAST
+       FORECAST
     ========================= */
 
     displayForecast(
@@ -277,11 +310,6 @@ function useMyLocation() {
             try {
 
 
-                /*
-                    Get location information
-                    from coordinates
-                */
-
                 const locationResponse =
                     await fetch(
 
@@ -307,10 +335,8 @@ function useMyLocation() {
                     locationData.results.length > 0
                 ) {
 
-
                     name =
                         locationData.results[0].name;
-
 
                     country =
                         locationData.results[0].country;
@@ -331,7 +357,6 @@ function useMyLocation() {
 
                 );
 
-
             }
 
 
@@ -348,12 +373,15 @@ function useMyLocation() {
 
         function(error) {
 
-
             console.error(error);
 
 
             cityName.textContent =
                 "Location unavailable";
+
+
+            localTime.textContent =
+                "--:--";
 
 
             temperature.textContent =
@@ -399,14 +427,63 @@ function useMyLocation() {
 
 
 /* =========================
+   UPDATE LOCAL TIME
+========================= */
+
+function updateLocalTime() {
+
+
+    if (!cityTimeZone) {
+
+        return;
+
+    }
+
+
+    const now =
+        new Date();
+
+
+    const time =
+        new Intl.DateTimeFormat(
+            "en-US",
+            {
+                timeZone: cityTimeZone,
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit"
+            }
+        ).format(now);
+
+
+    localTime.textContent =
+        `Local time: ${time}`;
+
+}
+
+
+/* =========================
+   UPDATE CLOCK EVERY SECOND
+========================= */
+
+setInterval(
+    updateLocalTime,
+    1000
+);
+
+
+/* =========================
    LOADING STATE
 ========================= */
 
 function showLoading() {
 
-
     cityName.textContent =
         "Loading...";
+
+
+    localTime.textContent =
+        "--:--";
 
 
     temperature.textContent =
@@ -453,9 +530,12 @@ function showLoading() {
 
 function showError() {
 
-
     cityName.textContent =
         "Error";
+
+
+    localTime.textContent =
+        "--:--";
 
 
     temperature.textContent =
@@ -502,7 +582,6 @@ function showError() {
 
 function formatTime(dateTime) {
 
-
     const date =
         new Date(dateTime);
 
@@ -522,11 +601,10 @@ function formatTime(dateTime) {
 
 
 /* =========================
-   DISPLAY FORECAST
+   FORECAST
 ========================= */
 
 function displayForecast(daily) {
-
 
     forecast.innerHTML =
         "";
@@ -576,7 +654,9 @@ function displayForecast(daily) {
 
 
         const forecastCard =
-            document.createElement("div");
+            document.createElement(
+                "div"
+            );
 
 
         forecastCard.className =
@@ -621,62 +701,37 @@ function displayForecast(daily) {
 
 function getWeatherDescription(code) {
 
-
     if (code === 0) {
-
         return "Clear sky";
-
     }
-
 
     if (code === 1 || code === 2) {
-
         return "Partly cloudy";
-
     }
-
 
     if (code === 3) {
-
         return "Overcast";
-
     }
-
 
     if (code >= 45 && code <= 48) {
-
         return "Foggy";
-
     }
-
 
     if (code >= 51 && code <= 67) {
-
         return "Rainy";
-
     }
-
 
     if (code >= 71 && code <= 77) {
-
         return "Snowy";
-
     }
-
 
     if (code >= 80 && code <= 82) {
-
         return "Rain showers";
-
     }
-
 
     if (code >= 95) {
-
         return "Thunderstorm";
-
     }
-
 
     return "Unknown weather";
 
@@ -689,62 +744,37 @@ function getWeatherDescription(code) {
 
 function getWeatherIcon(code) {
 
-
     if (code === 0) {
-
         return "☀️";
-
     }
-
 
     if (code === 1 || code === 2) {
-
         return "🌤️";
-
     }
-
 
     if (code === 3) {
-
         return "☁️";
-
     }
-
 
     if (code >= 45 && code <= 48) {
-
         return "🌫️";
-
     }
-
 
     if (code >= 51 && code <= 67) {
-
         return "🌧️";
-
     }
-
 
     if (code >= 71 && code <= 77) {
-
         return "❄️";
-
     }
-
 
     if (code >= 80 && code <= 82) {
-
         return "🌦️";
-
     }
-
 
     if (code >= 95) {
-
         return "⛈️";
-
     }
-
 
     return "🌡️";
 
@@ -752,16 +782,11 @@ function getWeatherIcon(code) {
 
 
 /* =========================
-   DYNAMIC WEATHER BACKGROUND
+   DYNAMIC BACKGROUND
 ========================= */
 
 function setWeatherBackground(code) {
 
-
-    /*
-       Remove the previous
-       weather background
-    */
 
     document.body.classList.remove(
 
@@ -775,8 +800,6 @@ function setWeatherBackground(code) {
     );
 
 
-    /* Clear sky */
-
     if (code === 0) {
 
         document.body.classList.add(
@@ -784,9 +807,6 @@ function setWeatherBackground(code) {
         );
 
     }
-
-
-    /* Cloudy */
 
     else if (
         code === 1 ||
@@ -800,9 +820,6 @@ function setWeatherBackground(code) {
 
     }
 
-
-    /* Fog */
-
     else if (
         code >= 45 &&
         code <= 48
@@ -813,9 +830,6 @@ function setWeatherBackground(code) {
         );
 
     }
-
-
-    /* Rain */
 
     else if (
         code >= 51 &&
@@ -828,9 +842,6 @@ function setWeatherBackground(code) {
 
     }
 
-
-    /* Snow */
-
     else if (
         code >= 71 &&
         code <= 77
@@ -841,9 +852,6 @@ function setWeatherBackground(code) {
         );
 
     }
-
-
-    /* Rain showers */
 
     else if (
         code >= 80 &&
@@ -856,9 +864,6 @@ function setWeatherBackground(code) {
 
     }
 
-
-    /* Thunderstorm */
-
     else if (code >= 95) {
 
         document.body.classList.add(
@@ -867,4 +872,4 @@ function setWeatherBackground(code) {
 
     }
 
-   }
+                                         }
