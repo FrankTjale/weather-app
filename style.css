@@ -23,14 +23,69 @@ body {
 
     padding: 20px;
 
-    background:
-        linear-gradient(
-            135deg,
-            #2563eb,
-            #06b6d4
-        );
+    background: linear-gradient(
+        135deg,
+        #2563eb,
+        #06b6d4
+    );
 
     color: #111827;
+
+    transition:
+        background 0.8s ease;
+}
+
+
+/* =========================
+   WEATHER BACKGROUNDS
+========================= */
+
+body.clear {
+    background: linear-gradient(
+        135deg,
+        #f59e0b,
+        #38bdf8
+    );
+}
+
+body.cloudy {
+    background: linear-gradient(
+        135deg,
+        #64748b,
+        #94a3b8
+    );
+}
+
+body.rain {
+    background: linear-gradient(
+        135deg,
+        #1e3a8a,
+        #475569
+    );
+}
+
+body.snow {
+    background: linear-gradient(
+        135deg,
+        #bae6fd,
+        #e0f2fe
+    );
+}
+
+body.fog {
+    background: linear-gradient(
+        135deg,
+        #6b7280,
+        #d1d5db
+    );
+}
+
+body.storm {
+    background: linear-gradient(
+        135deg,
+        #111827,
+        #312e81
+    );
 }
 
 
@@ -75,7 +130,7 @@ h1 {
     display: flex;
     gap: 10px;
 
-    margin-bottom: 20px;
+    margin-bottom: 12px;
 }
 
 .search-box input {
@@ -112,6 +167,41 @@ h1 {
 }
 
 .search-box button:hover {
+    transform: translateY(-2px);
+}
+
+
+/* =========================
+   LOCATION BUTTON
+========================= */
+
+.location-button {
+    width: 100%;
+
+    padding: 14px;
+
+    margin-bottom: 20px;
+
+    border: 2px solid rgba(255, 255, 255, 0.8);
+
+    border-radius: 12px;
+
+    background: rgba(255, 255, 255, 0.15);
+
+    color: white;
+
+    font-size: 1rem;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+.location-button:hover {
+    background: rgba(255, 255, 255, 0.25);
+
     transform: translateY(-2px);
 }
 
@@ -178,7 +268,24 @@ h1 {
 
     color: #4b5563;
 
-    margin-bottom: 25px;
+    margin-bottom: 10px;
+}
+
+
+/* =========================
+   FEELS LIKE
+========================= */
+
+.feels-like {
+    color: #6b7280;
+
+    font-size: 0.95rem;
+
+    margin-bottom: 20px;
+}
+
+.feels-like strong {
+    color: #111827;
 }
 
 
@@ -222,6 +329,109 @@ h1 {
 
 
 /* =========================
+   SUN INFORMATION
+========================= */
+
+.sun-info {
+    display: flex;
+
+    justify-content: space-around;
+
+    margin-top: 20px;
+
+    padding-top: 20px;
+
+    border-top: 1px solid #e5e7eb;
+}
+
+.sun-info div {
+    text-align: center;
+
+    flex: 1;
+}
+
+.sun-info span {
+    display: block;
+
+    font-size: 1.8rem;
+
+    margin-bottom: 5px;
+}
+
+.sun-info p {
+    color: #6b7280;
+
+    font-size: 0.85rem;
+
+    margin-bottom: 5px;
+}
+
+.sun-info strong {
+    font-size: 1rem;
+}
+
+
+/* =========================
+   5-DAY FORECAST
+========================= */
+
+.forecast-section {
+    margin-top: 30px;
+}
+
+.forecast-section h3 {
+    font-size: 1.3rem;
+
+    margin-bottom: 15px;
+}
+
+.forecast {
+    display: grid;
+
+    grid-template-columns:
+        repeat(5, 1fr);
+
+    gap: 8px;
+}
+
+.forecast-card {
+    background: #f3f4f6;
+
+    border-radius: 12px;
+
+    padding: 12px 5px;
+
+    text-align: center;
+}
+
+.forecast-day {
+    font-size: 0.8rem;
+
+    font-weight: bold;
+
+    margin-bottom: 8px;
+}
+
+.forecast-icon {
+    font-size: 1.8rem;
+
+    margin-bottom: 8px;
+}
+
+.forecast-temp {
+    font-size: 0.85rem;
+
+    font-weight: bold;
+}
+
+.forecast-low {
+    color: #6b7280;
+
+    font-weight: normal;
+}
+
+
+/* =========================
    MOBILE
 ========================= */
 
@@ -254,66 +464,6 @@ h1 {
     .weather-icon {
         font-size: 4rem;
     }
-    }
-
-.feels-like {
-    color: #6b7280;
-    font-size: 0.95rem;
-    margin-bottom: 20px;
-}
-
-.feels-like strong {
-    color: #111827;
-   }
-
-/* =========================
-   5-DAY FORECAST
-========================= */
-
-.forecast-section {
-    margin-top: 30px;
-}
-
-.forecast-section h3 {
-    font-size: 1.3rem;
-    margin-bottom: 15px;
-}
-
-.forecast {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 8px;
-}
-
-.forecast-card {
-    background: #f3f4f6;
-    border-radius: 12px;
-    padding: 12px 5px;
-    text-align: center;
-}
-
-.forecast-day {
-    font-size: 0.8rem;
-    font-weight: bold;
-    margin-bottom: 8px;
-}
-
-.forecast-icon {
-    font-size: 1.8rem;
-    margin-bottom: 8px;
-}
-
-.forecast-temp {
-    font-size: 0.85rem;
-    font-weight: bold;
-}
-
-.forecast-low {
-    color: #6b7280;
-    font-weight: normal;
-}
-
-@media (max-width: 500px) {
 
     .forecast {
         gap: 5px;
@@ -330,72 +480,4 @@ h1 {
     .forecast-day {
         font-size: 0.7rem;
     }
-   }
-/* =========================
-   SUN INFORMATION
-========================= */
-
-.sun-info {
-    display: flex;
-    justify-content: space-around;
-
-    margin-top: 20px;
-    padding-top: 20px;
-
-    border-top: 1px solid #e5e7eb;
-}
-
-.sun-info div {
-    text-align: center;
-    flex: 1;
-}
-
-.sun-info span {
-    display: block;
-    font-size: 1.8rem;
-    margin-bottom: 5px;
-}
-
-.sun-info p {
-    color: #6b7280;
-    font-size: 0.85rem;
-    margin-bottom: 5px;
-}
-
-.sun-info strong {
-    font-size: 1rem;
-}
-
-/* =========================
-   LOCATION BUTTON
-========================= */
-
-.location-button {
-    width: 100%;
-
-    padding: 14px;
-
-    margin-bottom: 20px;
-
-    border: 2px solid rgba(255, 255, 255, 0.8);
-
-    border-radius: 12px;
-
-    background: rgba(255, 255, 255, 0.15);
-
-    color: white;
-
-    font-size: 1rem;
-
-    font-weight: bold;
-
-    cursor: pointer;
-
-    transition: 0.2s;
-}
-
-.location-button:hover {
-    background: rgba(255, 255, 255, 0.25);
-
-    transform: translateY(-2px);
    }
