@@ -15,8 +15,16 @@ const sunset = document.getElementById("sunset");
 const forecast = document.getElementById("forecast");
 
 
+/* =========================
+   SEARCH BUTTON
+========================= */
+
 searchButton.addEventListener("click", searchWeather);
 
+
+/* =========================
+   ENTER KEY
+========================= */
 
 cityInput.addEventListener("keypress", function(event) {
 
@@ -26,6 +34,10 @@ cityInput.addEventListener("keypress", function(event) {
 
 });
 
+
+/* =========================
+   SEARCH WEATHER BY CITY
+========================= */
 
 async function searchWeather() {
 
@@ -38,16 +50,10 @@ async function searchWeather() {
         return;
     }
 
-
     try {
 
-        description.textContent = "Loading weather...";
-        weatherIcon.textContent = "⏳";
+        showLoading();
 
-        forecast.innerHTML = "";
-
-
-        // Find city coordinates
 
         const locationResponse = await fetch(
             `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&language=en&format=json`
@@ -66,97 +72,289 @@ async function searchWeather() {
 
         const location = locationData.results[0];
 
-        const latitude = location.latitude;
-        const longitude = location.longitude;
 
-
-        // Get weather information
-
-        const weatherResponse = await fetch(
-            `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset&forecast_days=5&timezone=auto`
+        await getWeather(
+            location.latitude,
+            location.longitude,
+            location.name,
+            location.country
         );
 
 
-        const weatherData = await weatherResponse.json();
+    } catch (error) {
 
-
-        const currentWeather = weatherData.current;
-        const dailyWeather = weatherData.daily;
-
-
-        // Current weather
-
-        cityName.textContent =
-            `${location.name}, ${location.country}`;
-
-
-        temperature.textContent =
-            `${Math.round(currentWeather.temperature_2m)}°C`;
-
-
-        feelsLike.textContent =
-            `${Math.round(currentWeather.apparent_temperature)}°C`;
-
-
-        humidity.textContent =
-            `${currentWeather.relative_humidity_2m}%`;
-
-
-        windSpeed.textContent =
-            `${Math.round(currentWeather.wind_speed_10m)} km/h`;
-
-
-        description.textContent =
-            getWeatherDescription(currentWeather.weather_code);
-
-
-        weatherIcon.textContent =
-            getWeatherIcon(currentWeather.weather_code);
-
-
-        // Sunrise and sunset
-
-        sunrise.textContent =
-            formatTime(dailyWeather.sunrise[0]);
-
-
-        sunset.textContent =
-            formatTime(dailyWeather.sunset[0]);
-
-
-        // Five-day forecast
-
-        displayForecast(dailyWeather);
-
-    }
-
-
-    catch (error) {
-
-        cityName.textContent = "Error";
-
-        temperature.textContent = "--°C";
-
-        feelsLike.textContent = "--°C";
-
-        description.textContent =
-            "Could not find that city. Please try again.";
-
-        humidity.textContent = "--%";
-
-        windSpeed.textContent = "-- km/h";
-
-        sunrise.textContent = "--:--";
-
-        sunset.textContent = "--:--";
-
-        weatherIcon.textContent = "❌";
-
-        forecast.innerHTML = "";
+        showError();
 
         console.error(error);
 
     }
+
+}
+
+
+/* =========================
+   GET WEATHER
+========================= */
+
+async function getWeather(
+    latitude,
+    longitude,
+    name,
+    country
+) {
+
+    const weatherResponse = await fetch(
+
+        `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset&forecast_days=5&timezone=auto`
+
+    );
+
+
+    const weatherData =
+        await weatherResponse.json();
+
+
+    const currentWeather =
+        weatherData.current;
+
+    const dailyWeather =
+        weatherData.daily;
+
+
+    /* =========================
+       DISPLAY CURRENT WEATHER
+    ========================= */
+
+    cityName.textContent =
+        `${name}, ${country}`;
+
+
+    temperature.textContent =
+        `${Math.round(currentWeather.temperature_2m)}°C`;
+
+
+    feelsLike.textContent =
+        `${Math.round(currentWeather.apparent_temperature)}°C`;
+
+
+    humidity.textContent =
+        `${currentWeather.relative_humidity_2m}%`;
+
+
+    windSpeed.textContent =
+        `${Math.round(currentWeather.wind_speed_10m)} km/h`;
+
+
+    description.textContent =
+        getWeatherDescription(
+            currentWeather.weather_code
+        );
+
+
+    weatherIcon.textContent =
+        getWeatherIcon(
+            currentWeather.weather_code
+        );
+
+
+    /* =========================
+       SUNRISE & SUNSET
+    ========================= */
+
+    sunrise.textContent =
+        formatTime(dailyWeather.sunrise[0]);
+
+
+    sunset.textContent =
+        formatTime(dailyWeather.sunset[0]);
+
+
+    /* =========================
+       FORECAST
+    ========================= */
+
+    displayForecast(dailyWeather);
+
+}
+
+
+/* =========================
+   USE MY LOCATION
+========================= */
+
+function useMyLocation() {
+
+    if (!navigator.geolocation) {
+
+        alert(
+            "Geolocation is not supported by your browser."
+        );
+
+        return;
+    }
+
+
+    showLoading();
+
+
+    navigator.geolocation.getCurrentPosition(
+
+        async function(position) {
+
+            const latitude =
+                position.coords.latitude;
+
+            const longitude =
+                position.coords.longitude;
+
+
+            try {
+
+                /* Find nearest city */
+
+                const locationResponse =
+                    await fetch(
+
+                        `https://geocoding-api.open-meteo.com/v1/reverse?latitude=${latitude}&longitude=${longitude}&language=en&format=json`
+
+                    );
+
+
+                const locationData =
+                    await locationResponse.json();
+
+
+                let name = "My Location";
+                let country = "";
+
+
+                if (
+                    locationData.results &&
+                    locationData.results.length > 0
+                ) {
+
+                    name =
+                        locationData.results[0].name;
+
+                    country =
+                        locationData.results[0].country;
+
+                }
+
+
+                cityInput.value = name;
+
+
+                await getWeather(
+                    latitude,
+                    longitude,
+                    name,
+                    country
+                );
+
+
+            } catch (error) {
+
+                showError();
+
+                console.error(error);
+
+            }
+
+        },
+
+
+        function(error) {
+
+            console.error(error);
+
+            cityName.textContent =
+                "Location unavailable";
+
+            description.textContent =
+                "Please allow location access or search for a city.";
+
+            weatherIcon.textContent = "📍";
+
+        }
+
+    );
+
+}
+
+
+/* =========================
+   LOADING STATE
+========================= */
+
+function showLoading() {
+
+    cityName.textContent =
+        "Loading...";
+
+    temperature.textContent =
+        "--°C";
+
+    feelsLike.textContent =
+        "--°C";
+
+    description.textContent =
+        "Getting weather information...";
+
+    humidity.textContent =
+        "--%";
+
+    windSpeed.textContent =
+        "-- km/h";
+
+    sunrise.textContent =
+        "--:--";
+
+    sunset.textContent =
+        "--:--";
+
+    weatherIcon.textContent =
+        "⏳";
+
+    forecast.innerHTML = "";
+
+}
+
+
+/* =========================
+   ERROR STATE
+========================= */
+
+function showError() {
+
+    cityName.textContent =
+        "Error";
+
+    temperature.textContent =
+        "--°C";
+
+    feelsLike.textContent =
+        "--°C";
+
+    description.textContent =
+        "Could not get the weather. Please try again.";
+
+    humidity.textContent =
+        "--%";
+
+    windSpeed.textContent =
+        "-- km/h";
+
+    sunrise.textContent =
+        "--:--";
+
+    sunset.textContent =
+        "--:--";
+
+    weatherIcon.textContent =
+        "❌";
+
+    forecast.innerHTML = "";
 
 }
 
@@ -167,7 +365,9 @@ async function searchWeather() {
 
 function formatTime(dateTime) {
 
-    const date = new Date(dateTime);
+    const date =
+        new Date(dateTime);
+
 
     return date.toLocaleTimeString(
         [],
@@ -181,7 +381,7 @@ function formatTime(dateTime) {
 
 
 /* =========================
-   DISPLAY FORECAST
+   FORECAST
 ========================= */
 
 function displayForecast(daily) {
@@ -189,29 +389,41 @@ function displayForecast(daily) {
     forecast.innerHTML = "";
 
 
-    for (let i = 0; i < daily.time.length; i++) {
+    for (
+        let i = 0;
+        i < daily.time.length;
+        i++
+    ) {
 
-        const date = new Date(daily.time[i]);
+        const date =
+            new Date(daily.time[i]);
 
 
-        const dayName = date.toLocaleDateString(
-            "en-US",
-            {
-                weekday: "short"
-            }
-        );
+        const dayName =
+            date.toLocaleDateString(
+                "en-US",
+                {
+                    weekday: "short"
+                }
+            );
 
 
         const icon =
-            getWeatherIcon(daily.weather_code[i]);
+            getWeatherIcon(
+                daily.weather_code[i]
+            );
 
 
         const maxTemp =
-            Math.round(daily.temperature_2m_max[i]);
+            Math.round(
+                daily.temperature_2m_max[i]
+            );
 
 
         const minTemp =
-            Math.round(daily.temperature_2m_min[i]);
+            Math.round(
+                daily.temperature_2m_min[i]
+            );
 
 
         const forecastCard =
@@ -242,7 +454,9 @@ function displayForecast(daily) {
         `;
 
 
-        forecast.appendChild(forecastCard);
+        forecast.appendChild(
+            forecastCard
+        );
 
     }
 
@@ -288,6 +502,7 @@ function getWeatherDescription(code) {
     }
 
     return "Unknown weather";
+
 }
 
 
@@ -330,4 +545,5 @@ function getWeatherIcon(code) {
     }
 
     return "🌡️";
+
 }
