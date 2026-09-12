@@ -491,3 +491,69 @@ h1 {
     color: #374151;
     margin-bottom: 10px;
 }
+/* =========================
+   PROFESSIONAL WEATHER ICON
+========================= */
+
+.weather-icon {
+    width: 110px;
+    height: 110px;
+
+    margin: 15px auto;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 4.5rem;
+
+    border-radius: 50%;
+
+    background: rgba(255, 255, 255, 0.55);
+
+    box-shadow:
+        0 10px 25px rgba(0, 0, 0, 0.08);
+
+    transition:
+        transform 0.3s ease;
+}
+
+.weather-icon:hover {
+    transform: scale(1.05);
+}
+/* =========================
+   FORECAST POLISH
+========================= */
+
+.forecast-card {
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.forecast-card:hover {
+    transform: translateY(-4px);
+
+    box-shadow:
+        0 8px 18px rgba(0, 0, 0, 0.1);
+}
+
+.forecast-icon {
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    min-height: 40px;
+}
+/* =========================
+   TEMPERATURE POLISH
+========================= */
+
+.temperature {
+    letter-spacing: -2px;
+}
+
+#description {
+    text-transform: capitalize;
+       }
