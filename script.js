@@ -7,6 +7,7 @@ const description = document.getElementById("description");
 const humidity = document.getElementById("humidity");
 const windSpeed = document.getElementById("windSpeed");
 const weatherIcon = document.getElementById("weatherIcon");
+const feelsLike = document.getElementById("feelsLike");
 
 searchButton.addEventListener("click", searchWeather);
 
@@ -30,7 +31,6 @@ async function searchWeather() {
         description.textContent = "Loading weather...";
         weatherIcon.textContent = "⏳";
 
-        // Find the city coordinates
         const locationResponse = await fetch(
             `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&language=en&format=json`
         );
@@ -46,20 +46,22 @@ async function searchWeather() {
         const latitude = location.latitude;
         const longitude = location.longitude;
 
-        // Get weather data
         const weatherResponse = await fetch(
-            `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&timezone=auto`
+            `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,wind_speed_10m&timezone=auto`
         );
 
         const weatherData = await weatherResponse.json();
 
         const currentWeather = weatherData.current;
 
-        // Display information
-        cityName.textContent = `${location.name}, ${location.country}`;
+        cityName.textContent =
+            `${location.name}, ${location.country}`;
 
         temperature.textContent =
             `${Math.round(currentWeather.temperature_2m)}°C`;
+
+        feelsLike.textContent =
+            `${Math.round(currentWeather.apparent_temperature)}°C`;
 
         humidity.textContent =
             `${currentWeather.relative_humidity_2m}%`;
@@ -78,6 +80,8 @@ async function searchWeather() {
         cityName.textContent = "Error";
 
         temperature.textContent = "--°C";
+
+        feelsLike.textContent = "--°C";
 
         description.textContent =
             "Could not find that city. Please try again.";
@@ -164,4 +168,4 @@ function getWeatherIcon(code) {
     }
 
     return "🌡️";
-                                             }
+        }
