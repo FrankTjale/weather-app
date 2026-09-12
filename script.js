@@ -8,74 +8,114 @@ const humidity = document.getElementById("humidity");
 const windSpeed = document.getElementById("windSpeed");
 const weatherIcon = document.getElementById("weatherIcon");
 const feelsLike = document.getElementById("feelsLike");
+const forecast = document.getElementById("forecast");
+
 
 searchButton.addEventListener("click", searchWeather);
 
+
 cityInput.addEventListener("keypress", function(event) {
+
     if (event.key === "Enter") {
         searchWeather();
     }
+
 });
+
 
 async function searchWeather() {
 
     const city = cityInput.value.trim();
 
     if (city === "") {
+
         alert("Please enter a city name.");
+
         return;
     }
+
 
     try {
 
         description.textContent = "Loading weather...";
         weatherIcon.textContent = "⏳";
+        forecast.innerHTML = "";
+
+
+        // Find city coordinates
 
         const locationResponse = await fetch(
             `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&language=en&format=json`
         );
 
+
         const locationData = await locationResponse.json();
 
+
         if (!locationData.results) {
+
             throw new Error("City not found");
+
         }
+
 
         const location = locationData.results[0];
 
         const latitude = location.latitude;
         const longitude = location.longitude;
 
+
+        // Get weather information
+
         const weatherResponse = await fetch(
-            `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,wind_speed_10m&timezone=auto`
+            `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset&forecast_days=5&timezone=auto`
         );
+
 
         const weatherData = await weatherResponse.json();
 
+
         const currentWeather = weatherData.current;
+
+
+        // Current weather
 
         cityName.textContent =
             `${location.name}, ${location.country}`;
 
+
         temperature.textContent =
             `${Math.round(currentWeather.temperature_2m)}°C`;
+
 
         feelsLike.textContent =
             `${Math.round(currentWeather.apparent_temperature)}°C`;
 
+
         humidity.textContent =
             `${currentWeather.relative_humidity_2m}%`;
+
 
         windSpeed.textContent =
             `${Math.round(currentWeather.wind_speed_10m)} km/h`;
 
+
         description.textContent =
             getWeatherDescription(currentWeather.weather_code);
+
 
         weatherIcon.textContent =
             getWeatherIcon(currentWeather.weather_code);
 
-    } catch (error) {
+
+        // Create 5-day forecast
+
+        displayForecast(weatherData.daily);
+
+    }
+
+
+    catch (error) {
 
         cityName.textContent = "Error";
 
@@ -92,9 +132,87 @@ async function searchWeather() {
 
         weatherIcon.textContent = "❌";
 
+        forecast.innerHTML = "";
+
         console.error(error);
+
     }
+
 }
+
+
+/* =========================
+   DISPLAY FORECAST
+========================= */
+
+function displayForecast(daily) {
+
+    forecast.innerHTML = "";
+
+
+    for (let i = 0; i < daily.time.length; i++) {
+
+        const date = new Date(daily.time[i]);
+
+
+        const dayName = date.toLocaleDateString(
+            "en-US",
+            {
+                weekday: "short"
+            }
+        );
+
+
+        const icon =
+            getWeatherIcon(daily.weather_code[i]);
+
+
+        const maxTemp =
+            Math.round(daily.temperature_2m_max[i]);
+
+
+        const minTemp =
+            Math.round(daily.temperature_2m_min[i]);
+
+
+        const forecastCard =
+            document.createElement("div");
+
+
+        forecastCard.className =
+            "forecast-card";
+
+
+        forecastCard.innerHTML = `
+
+            <div class="forecast-day">
+                ${dayName}
+            </div>
+
+            <div class="forecast-icon">
+                ${icon}
+            </div>
+
+            <div class="forecast-temp">
+                ${maxTemp}°
+                <span class="forecast-low">
+                    ${minTemp}°
+                </span>
+            </div>
+
+        `;
+
+
+        forecast.appendChild(forecastCard);
+
+    }
+
+}
+
+
+/* =========================
+   WEATHER DESCRIPTION
+========================= */
 
 function getWeatherDescription(code) {
 
@@ -133,6 +251,11 @@ function getWeatherDescription(code) {
     return "Unknown weather";
 }
 
+
+/* =========================
+   WEATHER ICON
+========================= */
+
 function getWeatherIcon(code) {
 
     if (code === 0) {
@@ -168,4 +291,4 @@ function getWeatherIcon(code) {
     }
 
     return "🌡️";
-        }
+    }
