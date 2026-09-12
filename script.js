@@ -50,17 +50,23 @@ async function searchWeather() {
         return;
     }
 
+
     try {
 
         showLoading();
 
 
+        // Find city coordinates
+
         const locationResponse = await fetch(
+
             `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&language=en&format=json`
+
         );
 
 
-        const locationData = await locationResponse.json();
+        const locationData =
+            await locationResponse.json();
 
 
         if (!locationData.results) {
@@ -70,18 +76,23 @@ async function searchWeather() {
         }
 
 
-        const location = locationData.results[0];
+        const location =
+            locationData.results[0];
 
 
         await getWeather(
+
             location.latitude,
             location.longitude,
             location.name,
             location.country
+
         );
 
 
-    } catch (error) {
+    }
+
+    catch (error) {
 
         showError();
 
@@ -103,6 +114,7 @@ async function getWeather(
     country
 ) {
 
+
     const weatherResponse = await fetch(
 
         `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset&forecast_days=5&timezone=auto`
@@ -117,39 +129,70 @@ async function getWeather(
     const currentWeather =
         weatherData.current;
 
+
     const dailyWeather =
         weatherData.daily;
 
 
     /* =========================
-       DISPLAY CURRENT WEATHER
+       CITY
     ========================= */
 
     cityName.textContent =
         `${name}, ${country}`;
 
 
-    temperature.textContent =
-        `${Math.round(currentWeather.temperature_2m)}°C`;
+    /* =========================
+       TEMPERATURE
+    ========================= */
 
+    temperature.textContent =
+        `${Math.round(
+            currentWeather.temperature_2m
+        )}°C`;
+
+
+    /* =========================
+       FEELS LIKE
+    ========================= */
 
     feelsLike.textContent =
-        `${Math.round(currentWeather.apparent_temperature)}°C`;
+        `${Math.round(
+            currentWeather.apparent_temperature
+        )}°C`;
 
+
+    /* =========================
+       HUMIDITY
+    ========================= */
 
     humidity.textContent =
         `${currentWeather.relative_humidity_2m}%`;
 
 
-    windSpeed.textContent =
-        `${Math.round(currentWeather.wind_speed_10m)} km/h`;
+    /* =========================
+       WIND
+    ========================= */
 
+    windSpeed.textContent =
+        `${Math.round(
+            currentWeather.wind_speed_10m
+        )} km/h`;
+
+
+    /* =========================
+       DESCRIPTION
+    ========================= */
 
     description.textContent =
         getWeatherDescription(
             currentWeather.weather_code
         );
 
+
+    /* =========================
+       WEATHER ICON
+    ========================= */
 
     weatherIcon.textContent =
         getWeatherIcon(
@@ -158,22 +201,41 @@ async function getWeather(
 
 
     /* =========================
-       SUNRISE & SUNSET
+       DYNAMIC BACKGROUND
     ========================= */
 
-    sunrise.textContent =
-        formatTime(dailyWeather.sunrise[0]);
-
-
-    sunset.textContent =
-        formatTime(dailyWeather.sunset[0]);
+    setWeatherBackground(
+        currentWeather.weather_code
+    );
 
 
     /* =========================
-       FORECAST
+       SUNRISE
     ========================= */
 
-    displayForecast(dailyWeather);
+    sunrise.textContent =
+        formatTime(
+            dailyWeather.sunrise[0]
+        );
+
+
+    /* =========================
+       SUNSET
+    ========================= */
+
+    sunset.textContent =
+        formatTime(
+            dailyWeather.sunset[0]
+        );
+
+
+    /* =========================
+       5-DAY FORECAST
+    ========================= */
+
+    displayForecast(
+        dailyWeather
+    );
 
 }
 
@@ -184,6 +246,7 @@ async function getWeather(
 
 function useMyLocation() {
 
+
     if (!navigator.geolocation) {
 
         alert(
@@ -191,6 +254,7 @@ function useMyLocation() {
         );
 
         return;
+
     }
 
 
@@ -201,8 +265,10 @@ function useMyLocation() {
 
         async function(position) {
 
+
             const latitude =
                 position.coords.latitude;
+
 
             const longitude =
                 position.coords.longitude;
@@ -210,7 +276,11 @@ function useMyLocation() {
 
             try {
 
-                /* Find nearest city */
+
+                /*
+                    Get location information
+                    from coordinates
+                */
 
                 const locationResponse =
                     await fetch(
@@ -224,8 +294,12 @@ function useMyLocation() {
                     await locationResponse.json();
 
 
-                let name = "My Location";
-                let country = "";
+                let name =
+                    "My Location";
+
+
+                let country =
+                    "";
 
 
                 if (
@@ -233,8 +307,10 @@ function useMyLocation() {
                     locationData.results.length > 0
                 ) {
 
+
                     name =
                         locationData.results[0].name;
+
 
                     country =
                         locationData.results[0].country;
@@ -242,18 +318,24 @@ function useMyLocation() {
                 }
 
 
-                cityInput.value = name;
+                cityInput.value =
+                    name;
 
 
                 await getWeather(
+
                     latitude,
                     longitude,
                     name,
                     country
+
                 );
 
 
-            } catch (error) {
+            }
+
+
+            catch (error) {
 
                 showError();
 
@@ -266,15 +348,48 @@ function useMyLocation() {
 
         function(error) {
 
+
             console.error(error);
+
 
             cityName.textContent =
                 "Location unavailable";
 
+
+            temperature.textContent =
+                "--°C";
+
+
+            feelsLike.textContent =
+                "--°C";
+
+
             description.textContent =
                 "Please allow location access or search for a city.";
 
-            weatherIcon.textContent = "📍";
+
+            humidity.textContent =
+                "--%";
+
+
+            windSpeed.textContent =
+                "-- km/h";
+
+
+            sunrise.textContent =
+                "--:--";
+
+
+            sunset.textContent =
+                "--:--";
+
+
+            weatherIcon.textContent =
+                "📍";
+
+
+            forecast.innerHTML =
+                "";
 
         }
 
@@ -289,34 +404,45 @@ function useMyLocation() {
 
 function showLoading() {
 
+
     cityName.textContent =
         "Loading...";
+
 
     temperature.textContent =
         "--°C";
 
+
     feelsLike.textContent =
         "--°C";
+
 
     description.textContent =
         "Getting weather information...";
 
+
     humidity.textContent =
         "--%";
+
 
     windSpeed.textContent =
         "-- km/h";
 
+
     sunrise.textContent =
         "--:--";
+
 
     sunset.textContent =
         "--:--";
 
+
     weatherIcon.textContent =
         "⏳";
 
-    forecast.innerHTML = "";
+
+    forecast.innerHTML =
+        "";
 
 }
 
@@ -327,34 +453,45 @@ function showLoading() {
 
 function showError() {
 
+
     cityName.textContent =
         "Error";
+
 
     temperature.textContent =
         "--°C";
 
+
     feelsLike.textContent =
         "--°C";
+
 
     description.textContent =
         "Could not get the weather. Please try again.";
 
+
     humidity.textContent =
         "--%";
+
 
     windSpeed.textContent =
         "-- km/h";
 
+
     sunrise.textContent =
         "--:--";
+
 
     sunset.textContent =
         "--:--";
 
+
     weatherIcon.textContent =
         "❌";
 
-    forecast.innerHTML = "";
+
+    forecast.innerHTML =
+        "";
 
 }
 
@@ -365,28 +502,34 @@ function showError() {
 
 function formatTime(dateTime) {
 
+
     const date =
         new Date(dateTime);
 
 
     return date.toLocaleTimeString(
+
         [],
+
         {
             hour: "2-digit",
             minute: "2-digit"
         }
+
     );
 
 }
 
 
 /* =========================
-   FORECAST
+   DISPLAY FORECAST
 ========================= */
 
 function displayForecast(daily) {
 
-    forecast.innerHTML = "";
+
+    forecast.innerHTML =
+        "";
 
 
     for (
@@ -395,16 +538,22 @@ function displayForecast(daily) {
         i++
     ) {
 
+
         const date =
-            new Date(daily.time[i]);
+            new Date(
+                daily.time[i]
+            );
 
 
         const dayName =
             date.toLocaleDateString(
+
                 "en-US",
+
                 {
                     weekday: "short"
                 }
+
             );
 
 
@@ -445,10 +594,13 @@ function displayForecast(daily) {
             </div>
 
             <div class="forecast-temp">
+
                 ${maxTemp}°
+
                 <span class="forecast-low">
                     ${minTemp}°
                 </span>
+
             </div>
 
         `;
@@ -469,37 +621,62 @@ function displayForecast(daily) {
 
 function getWeatherDescription(code) {
 
+
     if (code === 0) {
+
         return "Clear sky";
+
     }
+
 
     if (code === 1 || code === 2) {
+
         return "Partly cloudy";
+
     }
+
 
     if (code === 3) {
+
         return "Overcast";
+
     }
+
 
     if (code >= 45 && code <= 48) {
+
         return "Foggy";
+
     }
+
 
     if (code >= 51 && code <= 67) {
+
         return "Rainy";
+
     }
+
 
     if (code >= 71 && code <= 77) {
+
         return "Snowy";
+
     }
+
 
     if (code >= 80 && code <= 82) {
+
         return "Rain showers";
+
     }
 
+
     if (code >= 95) {
+
         return "Thunderstorm";
+
     }
+
 
     return "Unknown weather";
 
@@ -512,38 +689,182 @@ function getWeatherDescription(code) {
 
 function getWeatherIcon(code) {
 
+
     if (code === 0) {
+
         return "☀️";
+
     }
+
 
     if (code === 1 || code === 2) {
+
         return "🌤️";
+
     }
+
 
     if (code === 3) {
+
         return "☁️";
+
     }
+
 
     if (code >= 45 && code <= 48) {
+
         return "🌫️";
+
     }
+
 
     if (code >= 51 && code <= 67) {
+
         return "🌧️";
+
     }
+
 
     if (code >= 71 && code <= 77) {
+
         return "❄️";
+
     }
+
 
     if (code >= 80 && code <= 82) {
+
         return "🌦️";
+
     }
 
+
     if (code >= 95) {
+
         return "⛈️";
+
     }
+
 
     return "🌡️";
 
 }
+
+
+/* =========================
+   DYNAMIC WEATHER BACKGROUND
+========================= */
+
+function setWeatherBackground(code) {
+
+
+    /*
+       Remove the previous
+       weather background
+    */
+
+    document.body.classList.remove(
+
+        "clear",
+        "cloudy",
+        "rain",
+        "snow",
+        "fog",
+        "storm"
+
+    );
+
+
+    /* Clear sky */
+
+    if (code === 0) {
+
+        document.body.classList.add(
+            "clear"
+        );
+
+    }
+
+
+    /* Cloudy */
+
+    else if (
+        code === 1 ||
+        code === 2 ||
+        code === 3
+    ) {
+
+        document.body.classList.add(
+            "cloudy"
+        );
+
+    }
+
+
+    /* Fog */
+
+    else if (
+        code >= 45 &&
+        code <= 48
+    ) {
+
+        document.body.classList.add(
+            "fog"
+        );
+
+    }
+
+
+    /* Rain */
+
+    else if (
+        code >= 51 &&
+        code <= 67
+    ) {
+
+        document.body.classList.add(
+            "rain"
+        );
+
+    }
+
+
+    /* Snow */
+
+    else if (
+        code >= 71 &&
+        code <= 77
+    ) {
+
+        document.body.classList.add(
+            "snow"
+        );
+
+    }
+
+
+    /* Rain showers */
+
+    else if (
+        code >= 80 &&
+        code <= 82
+    ) {
+
+        document.body.classList.add(
+            "rain"
+        );
+
+    }
+
+
+    /* Thunderstorm */
+
+    else if (code >= 95) {
+
+        document.body.classList.add(
+            "storm"
+        );
+
+    }
+
+   }
