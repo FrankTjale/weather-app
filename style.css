@@ -331,3 +331,37 @@ h1 {
         font-size: 0.7rem;
     }
    }
+/* =========================
+   SUN INFORMATION
+========================= */
+
+.sun-info {
+    display: flex;
+    justify-content: space-around;
+
+    margin-top: 20px;
+    padding-top: 20px;
+
+    border-top: 1px solid #e5e7eb;
+}
+
+.sun-info div {
+    text-align: center;
+    flex: 1;
+}
+
+.sun-info span {
+    display: block;
+    font-size: 1.8rem;
+    margin-bottom: 5px;
+}
+
+.sun-info p {
+    color: #6b7280;
+    font-size: 0.85rem;
+    margin-bottom: 5px;
+}
+
+.sun-info strong {
+    font-size: 1rem;
+}
