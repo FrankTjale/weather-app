@@ -255,3 +255,13 @@ h1 {
         font-size: 4rem;
     }
     }
+
+.feels-like {
+    color: #6b7280;
+    font-size: 0.95rem;
+    margin-bottom: 20px;
+}
+
+.feels-like strong {
+    color: #111827;
+   }
