@@ -8,6 +8,10 @@ const humidity = document.getElementById("humidity");
 const windSpeed = document.getElementById("windSpeed");
 const weatherIcon = document.getElementById("weatherIcon");
 const feelsLike = document.getElementById("feelsLike");
+
+const sunrise = document.getElementById("sunrise");
+const sunset = document.getElementById("sunset");
+
 const forecast = document.getElementById("forecast");
 
 
@@ -39,6 +43,7 @@ async function searchWeather() {
 
         description.textContent = "Loading weather...";
         weatherIcon.textContent = "⏳";
+
         forecast.innerHTML = "";
 
 
@@ -76,6 +81,7 @@ async function searchWeather() {
 
 
         const currentWeather = weatherData.current;
+        const dailyWeather = weatherData.daily;
 
 
         // Current weather
@@ -108,9 +114,19 @@ async function searchWeather() {
             getWeatherIcon(currentWeather.weather_code);
 
 
-        // Create 5-day forecast
+        // Sunrise and sunset
 
-        displayForecast(weatherData.daily);
+        sunrise.textContent =
+            formatTime(dailyWeather.sunrise[0]);
+
+
+        sunset.textContent =
+            formatTime(dailyWeather.sunset[0]);
+
+
+        // Five-day forecast
+
+        displayForecast(dailyWeather);
 
     }
 
@@ -130,6 +146,10 @@ async function searchWeather() {
 
         windSpeed.textContent = "-- km/h";
 
+        sunrise.textContent = "--:--";
+
+        sunset.textContent = "--:--";
+
         weatherIcon.textContent = "❌";
 
         forecast.innerHTML = "";
@@ -137,6 +157,25 @@ async function searchWeather() {
         console.error(error);
 
     }
+
+}
+
+
+/* =========================
+   FORMAT TIME
+========================= */
+
+function formatTime(dateTime) {
+
+    const date = new Date(dateTime);
+
+    return date.toLocaleTimeString(
+        [],
+        {
+            hour: "2-digit",
+            minute: "2-digit"
+        }
+    );
 
 }
 
@@ -291,4 +330,4 @@ function getWeatherIcon(code) {
     }
 
     return "🌡️";
-    }
+}
