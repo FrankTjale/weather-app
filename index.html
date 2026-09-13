@@ -1,115 +1,239 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Weather App</title>
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-    <link rel="stylesheet" href="style.css">
+    <meta
+        name="description"
+        content="A responsive weather application that provides current weather conditions and a 5-day forecast for cities around the world."
+    >
+
+    <meta
+        name="theme-color"
+        content="#2563eb"
+    >
+
+    <title>Weather App | Live Weather Forecast</title>
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
 </head>
 
 <body>
 
     <main class="weather-app">
 
-        <h1>Weather App</h1>
+        <header>
+            <h1>Weather App</h1>
 
-        <p class="subtitle">
-            Check the current weather in any city.
-        </p>
+            <p class="subtitle">
+                Check the current weather in any city.
+            </p>
+        </header>
 
-        <div class="search-box">
 
-    <input
-        type="text"
-        id="cityInput"
-        placeholder="Enter city name"
-    >
+        <!-- Search -->
 
-    <button id="searchButton">
-        Search
-    </button>
+        <section
+            class="search-section"
+            aria-label="Weather search"
+        >
 
-</div>
+            <div class="search-box">
 
-<button
-    class="location-button"
-    onclick="useMyLocation()"
->
-    📍 Use My Location
-</button>
+                <label
+                    for="cityInput"
+                    class="visually-hidden"
+                >
+                    Enter city name
+                </label>
 
-        <section class="weather-card">
+                <input
+                    type="text"
+                    id="cityInput"
+                    placeholder="Enter city name"
+                    autocomplete="off"
+                    aria-label="Enter city name"
+                >
+
+                <button
+                    id="searchButton"
+                    type="button"
+                >
+                    Search
+                </button>
+
+            </div>
+
+
+            <button
+                class="location-button"
+                type="button"
+                onclick="useMyLocation()"
+            >
+                📍 Use My Location
+            </button>
+
+        </section>
+
+
+        <!-- Weather Information -->
+
+        <section
+            class="weather-card"
+            aria-live="polite"
+            aria-atomic="true"
+        >
 
             <h2 id="cityName">
-    Search for a city
-</h2>
+                Search for a city
+            </h2>
 
-<p class="local-time" id="localTime">
-    --:--
-    </p>
 
-            <div class="weather-icon" id="weatherIcon">
+            <p
+                class="local-time"
+                id="localTime"
+            >
+                --:--
+            </p>
+
+
+            <div
+                class="weather-icon"
+                id="weatherIcon"
+                role="img"
+                aria-label="Weather condition"
+            >
                 🌤️
             </div>
 
-            <p class="temperature" id="temperature">
+
+            <p
+                class="temperature"
+                id="temperature"
+            >
                 --°C
             </p>
+
 
             <p id="description">
                 Weather information will appear here.
             </p>
+
+
             <p class="feels-like">
-    Feels like <strong id="feelsLike">--°C</strong>
+                Feels like
+                <strong id="feelsLike">
+                    --°C
+                </strong>
             </p>
+
+
+            <!-- Weather Details -->
 
             <div class="weather-details">
 
                 <div>
-                    <span>💧</span>
-                    <p>Humidity</p>
-                    <strong id="humidity">--%</strong>
+                    <span aria-hidden="true">💧</span>
+
+                    <p>
+                        Humidity
+                    </p>
+
+                    <strong id="humidity">
+                        --%
+                    </strong>
                 </div>
 
+
                 <div>
-                    <span>💨</span>
-                    <p>Wind</p>
-                    <strong id="windSpeed">-- km/h</strong>
+                    <span aria-hidden="true">💨</span>
+
+                    <p>
+                        Wind
+                    </p>
+
+                    <strong id="windSpeed">
+                        -- km/h
+                    </strong>
                 </div>
 
             </div>
 
+
+            <!-- Sunrise / Sunset -->
+
             <div class="sun-info">
 
-    <div>
-        <span>🌅</span>
-        <p>Sunrise</p>
-        <strong id="sunrise">--:--</strong>
-    </div>
+                <div>
 
-    <div>
-        <span>🌇</span>
-        <p>Sunset</p>
-        <strong id="sunset">--:--</strong>
-    </div>
+                    <span aria-hidden="true">
+                        🌅
+                    </span>
 
-    </div>
-            <div class="forecast-section">
+                    <p>
+                        Sunrise
+                    </p>
 
-    <h3>5-Day Forecast</h3>
-
-    <div id="forecast" class="forecast">
-        <!-- Forecast cards will be added by JavaScript -->
-    </div>
+                    <strong id="sunrise">
+                        --:--
+                    </strong>
 
                 </div>
+
+
+                <div>
+
+                    <span aria-hidden="true">
+                        🌇
+                    </span>
+
+                    <p>
+                        Sunset
+                    </p>
+
+                    <strong id="sunset">
+                        --:--
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <!-- Forecast -->
+
+            <div class="forecast-section">
+
+                <h3>
+                    5-Day Forecast
+                </h3>
+
+                <div
+                    id="forecast"
+                    class="forecast"
+                    aria-label="Five day weather forecast"
+                >
+                    <!-- Forecast cards generated by JavaScript -->
+                </div>
+
+            </div>
+
         </section>
 
     </main>
 
+
     <script src="script.js"></script>
 
 </body>
-      </html>
+
+</html>
